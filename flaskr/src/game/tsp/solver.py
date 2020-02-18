@@ -8,7 +8,7 @@ from src.game.tsp.tsp import Tsp
 
 
 class Solver:
-    def __init__(self, epoch=1000):
+    def __init__(self, epoch=10000):
         self.max_epoch = epoch
 
     def check_temp(self, i):

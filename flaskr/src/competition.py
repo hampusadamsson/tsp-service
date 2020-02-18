@@ -6,7 +6,7 @@ from flask_cors import CORS
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 
 from src.Configuration import Configuration
-from src.database.con import get_highscore, insert_new_highscore
+from src.database.DBconnector import DBconnector
 from src.game.tsp.tsp import Tsp
 
 app = Flask(__name__,
@@ -42,23 +42,32 @@ def static_submit():
     return render_template('index.html')
 
 
-@app.route('/tsp')
-def send_tsp():
-    return send_file(Configuration().problem)
+#@app.before_request
+#def checker():
+#    user = request.form.get('user')
+#    if not user:
+#        print("!")
+#        return "NO User"
 
 
 @app.route('/login')
 def login():
-    # TODO - fix login
     resp = make_response(redirect('highscore'))
     usr = "Hampus"
     resp.set_cookie('username', usr)
     return resp
 
 
+@app.route('/tsp')
+def send_tsp():
+    return send_file(Configuration().problem)
+
+
 @app.route('/getHighscore')
 def highscore():
-    return make_response(get_highscore())
+    db = DBconnector()
+    res = [list(t) for t in db.get_highscore()]
+    return make_response(json.dumps(res))
 #    user = request.cookies.get('username')
 #    if user:2
 #        return make_response(get_highscore())
@@ -77,7 +86,6 @@ def upload():
 
 @app.route('/submitSolution', methods=['POST'])
 def submit_solution():
-    print(request)
     user = request.form.get('user')
     solution = request.form.get('solution')
     do_submit = request.form.get('submit')
@@ -91,9 +99,9 @@ def submit(user, solution, do_submit):
     dist = tsp.distance(solution)
     if not dist:
         return make_response(json.dumps({'distance': "Solution is invalid"}))
-    print(do_submit)
     if not do_submit or int(do_submit):
-        insert_new_highscore(name=user, score=dist, solution=solution)
+        db = DBconnector()
+        db.insert_new_highscore(name=user, score=dist, solution=solution)
     return make_response(json.dumps({'distance': dist}))
 
 
