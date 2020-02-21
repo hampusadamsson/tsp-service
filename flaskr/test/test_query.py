@@ -10,3 +10,8 @@ class TestQuery(TestCase):
         r = db.get_highscore()
         assert r[0][0] == "test"
         assert r[0][1] == 1000
+
+    def test_get_submission_ranking(self):
+        db = DBconnector()
+        res = db.get_submission_ranking(1)
+        print(res)

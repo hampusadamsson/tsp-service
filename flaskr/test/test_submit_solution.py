@@ -2,7 +2,7 @@ import json
 from unittest import TestCase
 
 from src.Configuration import Configuration
-from src.competition import app
+from src.application import app
 from src.game.tsp.tsp import Tsp
 
 

@@ -1,6 +1,7 @@
 import datetime
 
 import sqlalchemy as db
+from sqlalchemy import func, and_
 
 from src.Configuration import Configuration
 
@@ -31,9 +32,18 @@ class DBconnector():
                                           datetime=dateandtime,
                                           solution=str(solution))
         self.connection.execute(query)
+        return self.get_submission_ranking(score)
 
     def get_highscore(self):
         results = db.select([self.highscore.columns.name,
                              self.highscore.columns.score,
                              self.highscore.columns.datetime]).order_by(self.highscore.columns.score).limit(100)
         return self.connection.execute(results).fetchall()
+
+    def get_submission_ranking(self, score):
+        results = db.select([func.count(self.highscore.columns.name)],
+                            and_(self.highscore.columns.score < score)
+                          )
+        res = self.connection.execute(results).fetchall()
+        rank = res[0][0]+1
+        return rank

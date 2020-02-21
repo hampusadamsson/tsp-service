@@ -2,6 +2,8 @@ import math
 
 from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
+from matplotlib.pyplot import style
+style.use("ggplot")
 
 
 class Tsp:

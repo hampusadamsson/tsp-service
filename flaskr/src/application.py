@@ -97,12 +97,14 @@ def submit(user, solution, do_submit):
     tsp = Tsp(Configuration().problem)
     solution = list(filter(lambda x: str(x).isdigit(), solution))
     dist = tsp.distance(solution)
+    print(do_submit)
+    rank = 0
     if not dist:
         return make_response(json.dumps({'distance': "Solution is invalid"}))
     if not do_submit or int(do_submit):
         db = DBconnector()
-        db.insert_new_highscore(name=user, score=dist, solution=solution)
-    return make_response(json.dumps({'distance': dist}))
+        rank = db.insert_new_highscore(name=user, score=dist, solution=solution)
+    return make_response(json.dumps({'distance': dist, 'rank': rank}))
 
 
 @app.route('/img')
